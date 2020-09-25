@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -29,6 +30,12 @@ public class MainActivity extends AppCompatActivity {
 
         mRandom = new Random();
 
+        mBtnStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DownLoad().execute();
+            }
+        });
     }
 
     class DownLoad extends AsyncTask<Void,Integer,String>{
@@ -42,14 +49,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... voids) {
             for ( ; true ;){
+                mProgress += mRandom.nextInt(10);
                 if (mProgress >= 100){
                     mProgress = 100;
                     publishProgress(mProgress);
                     break;
-                }else{
-                    mProgress += mRandom.nextInt(10);
-                    publishProgress(mProgress);
                 }
+                publishProgress(mProgress);
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
