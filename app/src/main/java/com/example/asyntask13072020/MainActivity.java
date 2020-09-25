@@ -7,12 +7,17 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
     Button mBtnStart;
     TextView mTvProgress;
     ProgressBar mProgressBar;
+    int mProgress = 0;
+    Random mRandom ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,26 +27,50 @@ public class MainActivity extends AppCompatActivity {
         mTvProgress = findViewById(R.id.textviewProgress);
         mProgressBar = findViewById(R.id.progressbar);
 
+        mRandom = new Random();
+
     }
-    // 1 - params : giá trị đầu vào để xử lý trong luồng background
-    // 2 - progress : giá trị dùng để cập nhật tiến trình trong luồng background
-    // 3 - result : giá trị trả về sau khi xử lý xong tiến trình
-    class MyAsynTask extends AsyncTask<String,String,String>{
+
+    class DownLoad extends AsyncTask<Void,Integer,String>{
 
         @Override
-        protected String doInBackground(String... strings) {
-//            publishProgress();
-            return null;
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Toast.makeText(MainActivity.this, "Bắt đầu tải xuống", Toast.LENGTH_SHORT).show();
         }
 
         @Override
-        protected void onProgressUpdate(String... values) {
+        protected String doInBackground(Void... voids) {
+            for ( ; true ;){
+                if (mProgress >= 100){
+                    mProgress = 100;
+                    publishProgress(mProgress);
+                    break;
+                }else{
+                    mProgress += mRandom.nextInt(10);
+                    publishProgress(mProgress);
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return "Down load kết thúc";
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+            Integer progress = values[0];
+            mTvProgress.setText(progress + " %");
+            mProgressBar.setProgress(progress);
             super.onProgressUpdate(values);
         }
 
         @Override
-        protected void onPostExecute(String integer) {
-            super.onPostExecute(integer);
+        protected void onPostExecute(String s) {
+            Toast.makeText(MainActivity.this, s, Toast.LENGTH_SHORT).show();
+            super.onPostExecute(s);
         }
     }
 }
